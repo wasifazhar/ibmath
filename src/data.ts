@@ -58,14 +58,14 @@ export const plans = [
 ]
 
 export const whyFeatures = [
-  { Icon: Trophy,        title: '16 Years of Mathematics Teaching', desc: 'Head of Mathematics at two prominent schools in Pakistan with international teaching experience.' },
+  { Icon: Trophy,        title: '20 Years of Mathematics Teaching', desc: 'Head of Mathematics at two prominent schools in Pakistan with international teaching experience.' },
   { Icon: ClipboardList, title: 'Covers Every Major Syllabus',       desc: 'IB SL/HL, GCSE, IGCSE, A-Level, AP Calculus, SAT, O-Level, Keystage — all expertly covered.' },
   { Icon: Zap,           title: 'Patient, Clear & Results-Driven',   desc: '4.9 ★ from 140 reviews. 4,150+ lessons delivered. 70% of students achieve Grade 6 or 7.' },
 ]
 
 export const whyStats = [
   { num: '16',     lbl: 'Years Experience' },
-  { num: '4,150+', lbl: 'Lessons Taught' },
+  { num: '6,000+', lbl: 'Lessons Taught' },
   { num: '4.9 ★',  lbl: 'Student Rating' },
   { num: '70%',    lbl: 'Achieve Grade 6-7' },
 ]

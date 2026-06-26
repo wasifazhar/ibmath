@@ -6,7 +6,7 @@ export default function AboutPage() {
     <>
       <PageHeader
         tag="✦ About Ather"
-        title="16 Years of Excellence in Mathematics Teaching"
+        title="20 Years of Excellence in Mathematics Teaching"
         accent="Excellence in Mathematics"
         subtitle="Ather is currently Head of Mathematics at two prominent schools. Taught 4,150+ lessons globally."
       />
