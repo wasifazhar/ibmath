@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="badge-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F2040" />
+      <stop offset="100%" stop-color="#1A3460" />
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#badge-grad)" />
+  <g transform="translate(4, 4)">
+    <path d="M18 7V5H6l6 7-6 7h12v-2" fill="none" stroke="#C9A84C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+</svg>
