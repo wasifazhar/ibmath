@@ -36,21 +36,21 @@ export const testimonials = [
 export const plans = [
   {
     plan: 'Trial',
-    price: '12',
+    price: '0',
     desc: 'A single 50-minute trial lesson to experience the teaching style.',
-    features: ['50-min lesson', 'One-on-one session', 'Topic of your choice', 'No commitment required', 'Instant booking'],
+    features: ['20-min lesson', 'One-on-one session', 'Topic of your choice', 'No commitment required', 'Instant booking'],
     featured: false,
   },
   {
     plan: 'Regular',
-    price: '12',
+    price: '15',
     desc: 'Most popular — consistent sessions for steady grade improvement.',
     features: ['50-min lessons', 'Flexible scheduling', 'Past paper practice', 'WhatsApp support', 'Progress tracking', 'Covers all syllabuses'],
     featured: true,
   },
   {
     plan: 'Intensive',
-    price: '12',
+    price: '24',
     desc: 'Exam sprint — daily sessions in the weeks before your exams.',
     features: ['Daily sessions available', 'Full syllabus revision', 'Timed past paper mocks', 'Mark scheme walkthroughs', 'Personalised study plan'],
     featured: false,
