@@ -191,7 +191,7 @@ export default function App() {
                 <input
                   id="auth-email"
                   type={authTab === 'login' ? 'text' : 'email'}
-                  placeholder={authTab === 'login' ? 'admin@20.com' : 'you@example.com'}
+                  placeholder={authTab === 'login' ? 'Enter your username' : 'you@example.com'}
                   value={authForm.email}
                   onChange={e => setAuthForm(p => ({ ...p, email: e.target.value }))}
                   required
