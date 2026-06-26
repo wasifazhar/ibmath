@@ -19,7 +19,7 @@ import './index.css'
 
 const ADMIN_USERNAMES = ['admin20.com', 'admin@20.com']
 const ADMIN_PASSWORD = 'admin123'
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://backend-olive-alpha-20.vercel.app/"
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "https://backend-olive-alpha-20.vercel.app"
 
 // ScrollToTop component to make sure page scroll resets on route change
 function ScrollToTop() {
