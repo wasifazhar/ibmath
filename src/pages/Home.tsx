@@ -68,7 +68,7 @@ export default function Home() {
                 <div className="tutor-title">IB Math Tutor · AA &amp; AI, HL &amp; SL</div>
                 <ul className="tutor-bullets">
                   <li><span className="tutor-dot" /><strong>4.9 ★</strong> rating · 140 reviews</li>
-                  <li><span className="tutor-dot" /><strong>4,150+</strong> lessons taught</li>
+                  <li><span className="tutor-dot" /><strong>6,000+</strong> lessons taught</li>
                   <li><span className="tutor-dot" /><strong>70%</strong> of students achieve Grade 6 or 7</li>
                   <li><span className="tutor-dot" />Students from <strong>40+</strong> countries</li>
                 </ul>
