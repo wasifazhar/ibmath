@@ -25,7 +25,7 @@ export default function Home() {
             <p className="hero-sub">
               Certified tutor with <strong>20 years</strong> of experience. Master's in Mathematics.
               IB SL/HL · GCSE · IGCSE · A-Level · AP Calculus · SAT · O-Level.
-              Taught <strong>4,150+ lessons</strong> to students from <strong>40+ countries</strong>.
+              Taught <strong>6,000+ lessons</strong> to students from <strong>40+ countries</strong>.
             </p>
 
             {/* Trust row */}
@@ -83,7 +83,7 @@ export default function Home() {
       <div className="stats-bar">
         <div className="stats-bar-inner">
           {[
-            { Icon: Users, num: '4,150+', lbl: 'Lessons Taught' },
+            { Icon: Users, num: '6,000+', lbl: 'Lessons Taught' },
             { Icon: TrendingUp, num: '70%', lbl: 'Achieve Grade 6 or 7' },
             { Icon: Clock, num: '20 Yrs', lbl: 'Teaching Experience' },
             { Icon: Star, num: '4.9 ★', lbl: '140 Student Reviews' },
