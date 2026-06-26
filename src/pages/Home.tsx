@@ -23,7 +23,7 @@ export default function Home() {
             </h1>
 
             <p className="hero-sub">
-              Certified tutor with <strong>16 years</strong> of experience. Master's in Mathematics.
+              Certified tutor with <strong>20 years</strong> of experience. Master's in Mathematics.
               IB SL/HL · GCSE · IGCSE · A-Level · AP Calculus · SAT · O-Level.
               Taught <strong>4,150+ lessons</strong> to students from <strong>40+ countries</strong>.
             </p>
