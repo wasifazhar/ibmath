@@ -32,7 +32,7 @@ export default function Home() {
             <div className="hero-trust">
               <div className="trust-item">
                 <Trophy size={15} strokeWidth={2} />
-                <span>16 years experience</span>
+                <span>20 years experience</span>
               </div>
               <div className="trust-sep" />
               <div className="trust-item">
