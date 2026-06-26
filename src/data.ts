@@ -64,7 +64,7 @@ export const whyFeatures = [
 ]
 
 export const whyStats = [
-  { num: '16',     lbl: 'Years Experience' },
+  { num: '20',     lbl: 'Years Experience' },
   { num: '6,000+', lbl: 'Lessons Taught' },
   { num: '4.9 ★',  lbl: 'Student Rating' },
   { num: '70%',    lbl: 'Achieve Grade 6-7' },

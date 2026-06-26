@@ -8,7 +8,7 @@ export default function AboutPage() {
         tag="✦ About Ather"
         title="20 Years of Excellence in Mathematics Teaching"
         accent="Excellence in Mathematics"
-        subtitle="Ather is currently Head of Mathematics at two prominent schools. Taught 4,150+ lessons globally."
+        subtitle="Ather taught 6,000+ lessons globally."
       />
 
       <section className="section why-section" id="why" style={{ background: 'var(--navy-mid)' }}>
