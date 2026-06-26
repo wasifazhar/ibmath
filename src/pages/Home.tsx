@@ -85,7 +85,7 @@ export default function Home() {
           {[
             { Icon: Users, num: '4,150+', lbl: 'Lessons Taught' },
             { Icon: TrendingUp, num: '70%', lbl: 'Achieve Grade 6 or 7' },
-            { Icon: Clock, num: '16 Yrs', lbl: 'Teaching Experience' },
+            { Icon: Clock, num: '20 Yrs', lbl: 'Teaching Experience' },
             { Icon: Star, num: '4.9 ★', lbl: '140 Student Reviews' },
           ].map((s, i) => (
             <div className="stat-item" key={i} id={`stat-${i}`}>
