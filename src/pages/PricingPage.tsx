@@ -1,14 +1,15 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import { plans } from '../data'
 
 export default function PricingPage() {
   const [email, setEmail] = useState('')
+  const navigate = useNavigate()
   const handleBooking = (e: React.FormEvent) => {
     e.preventDefault()
     if (email) {
-      alert(`Thank you! We'll be in touch at ${email} within 24 hours.`)
-      setEmail('')
+      navigate(`/book?email=${encodeURIComponent(email)}`)
     }
   }
 
@@ -39,42 +40,20 @@ export default function PricingPage() {
                     </div>
                   ))}
                 </div>
-                <a
-                  href="#contact-form-section"
+                <button
                   id={`pricing-cta-${i}`}
                   className={`btn ${p.featured ? 'btn-gold' : 'btn-primary'}`}
-                  style={{ width: '100%', justifyContent: 'center' }}
+                  style={{ width: '100%', justifyContent: 'center', border: 'none', cursor: 'pointer' }}
+                  onClick={() => navigate(`/book?plan=${encodeURIComponent(p.plan)}&price=${encodeURIComponent(p.price)}`)}
                 >
                   Get Started
-                </a>
+                </button>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA / Contact Section */}
-      <section className="cta-section" id="contact-form-section">
-        <div className="cta-card">
-          <div className="section-tag gold" style={{ marginBottom: 20 }}>✦ Book a Free Trial</div>
-          <h2>Start Your Math Journey Today</h2>
-          <p>Embark on your mathematics journey with a complimentary trial lesson. Together we will work towards your academic and career goals — making maths fun and easier. Let's get started!</p>
-          <form className="cta-form" onSubmit={handleBooking} id="booking-form">
-            <input
-              id="email-input"
-              type="email"
-              className="cta-input"
-              placeholder="Your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <button type="submit" id="book-now-btn" className="btn btn-gold">
-              Book Free Trial →
-            </button>
-          </form>
-        </div>
-      </section>
     </>
   )
 }

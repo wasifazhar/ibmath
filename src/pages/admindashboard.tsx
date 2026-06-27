@@ -1,13 +1,27 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CalendarCheck, DollarSign, GraduationCap, MessageSquare, Users } from 'lucide-react'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
+const rawApiUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_REACT_APP_BASE_URL || "https://backend-olive-alpha-20.vercel.app"
+const API_BASE_URL = rawApiUrl.replace(/\/+$/, '')
 
 interface RegisteredUser {
   id: string
   username: string
   email: string
   createdAt?: string
+}
+
+interface Booking {
+  _id: string
+  fullName: string
+  email: string
+  preferredDate: string
+  preferredTime: string
+  subject: string
+  pricingPlan?: string
+  description: string
+  status: string
+  paymentStatus?: string
 }
 
 const stats = [
@@ -17,15 +31,52 @@ const stats = [
   { Icon: DollarSign, label: 'Monthly Revenue', value: '$3,420' },
 ]
 
-const requests = [
-  { name: 'Mariam Khan', course: 'IB Math AA HL', status: 'New' },
-  { name: 'Oliver Smith', course: 'GCSE Mathematics', status: 'Follow up' },
-  { name: 'Aadam K.', course: 'AP Calculus', status: 'Scheduled' },
-]
+function isTrialRequest(booking: Booking): boolean {
+  const plan = booking.pricingPlan || ''
+  return plan === 'Trial' || plan.includes('Unsure') || !plan
+}
+
+function isPaidRequest(booking: Booking): boolean {
+  const plan = booking.pricingPlan || ''
+  return plan === 'Regular' || plan === 'Intensive'
+}
+
+function getPaymentStatus(booking: Booking): string {
+  if (booking.paymentStatus) return booking.paymentStatus
+  if (isTrialRequest(booking)) return 'Free'
+  return '🟡 Pending'
+}
+
+function getBookingStatus(booking: Booking): string {
+  const status = booking.status || ''
+  if (status.includes('Confirmed') || status.includes('Accepted')) return '🟢 Confirmed'
+  if (status.includes('Cancelled') || status.includes('Rejected')) return '🔴 Cancelled'
+  if (status.includes('Failed')) return '🔴 Failed'
+  return '🟡 Pending'
+}
+
+function isTrialPending(booking: Booking): boolean {
+  const status = booking.status || ''
+  return !status.includes('Accepted') && !status.includes('Confirmed') && !status.includes('Rejected') && !status.includes('Cancelled')
+}
+
+function isPaidPending(booking: Booking): boolean {
+  const payment = getPaymentStatus(booking)
+  const bookingStatus = getBookingStatus(booking)
+  return payment.includes('Pending') || bookingStatus.includes('Pending')
+}
 
 export default function AdminDashboard() {
   const [registeredUsers, setRegisteredUsers] = useState<RegisteredUser[]>([])
   const [usersError, setUsersError] = useState('')
+  const [bookings, setBookings] = useState<Booking[]>([])
+  const [bookingsError, setBookingsError] = useState('')
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
+  const [reviewPopoverOpen, setReviewPopoverOpen] = useState(false)
+  const reviewButtonRef = useRef<HTMLDivElement>(null)
+
+  const trialBookings = bookings.filter(isTrialRequest)
+  const paidBookings = bookings.filter(isPaidRequest)
 
   useEffect(() => {
     let cancelled = false
@@ -49,12 +100,141 @@ export default function AdminDashboard() {
       }
     }
 
+    async function fetchBookings() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/bookings`)
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.message || 'Could not fetch bookings.')
+        }
+
+        if (!cancelled) {
+          setBookings(data.bookings || [])
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setBookingsError(err instanceof Error ? err.message : 'Could not fetch bookings.')
+        }
+      }
+    }
+
     fetchUsers()
+    fetchBookings()
 
     return () => {
       cancelled = true
     }
   }, [])
+
+  useEffect(() => {
+    if (!reviewPopoverOpen) return
+
+    function handleClickOutside(event: MouseEvent) {
+      if (reviewButtonRef.current && !reviewButtonRef.current.contains(event.target as Node)) {
+        setReviewPopoverOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [reviewPopoverOpen])
+
+  const updateBooking = async (id: string, updates: { status?: string; paymentStatus?: string }) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/bookings/${id}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates)
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setBookings(prev => prev.map(b => b._id === id ? { ...b, ...updates } : b))
+        setSelectedBooking(prev => prev && prev._id === id ? { ...prev, ...updates } : prev)
+        if (updates.status && data.emailSent === false) {
+          console.error('Booking updated but email failed:', data.emailError)
+          alert(`Booking updated, but the email could not be sent.\n\n${data.emailError || 'Unknown error'}\n\nIf you use Vercel, add EMAIL_USER and EMAIL_PASS in your project environment variables, then redeploy.`)
+        }
+      }
+    } catch (err) {
+      console.error('Error updating booking', err)
+    }
+  }
+
+  const confirmTrialBooking = (id: string) => {
+    updateBooking(id, { status: '🟢 Confirmed' })
+  }
+
+  const rejectTrialBooking = (id: string) => {
+    updateBooking(id, { status: '🔴 Cancelled' })
+  }
+
+  const confirmPaidBooking = (id: string) => {
+    updateBooking(id, { status: '🟢 Confirmed', paymentStatus: '🟢 Paid' })
+  }
+
+  const rejectPaidBooking = (id: string) => {
+    updateBooking(id, { status: '🔴 Cancelled', paymentStatus: '🔴 Failed' })
+  }
+
+  const deleteBooking = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this booking?')) return
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/bookings/${id}`, {
+        method: 'DELETE'
+      })
+      if (res.ok) {
+        setBookings(prev => prev.filter(b => b._id !== id))
+        setSelectedBooking(prev => prev && prev._id === id ? null : prev)
+      }
+    } catch (err) {
+      console.error('Error deleting booking', err)
+    }
+  }
+
+  const formatBookingDate = (date: string) => {
+    const parsed = new Date(`${date}T00:00:00`)
+
+    if (Number.isNaN(parsed.getTime())) {
+      return date || 'Not provided'
+    }
+
+    return parsed.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  }
+
+  const formatShortDate = (date: string) => {
+    const parsed = new Date(`${date}T00:00:00`)
+    if (Number.isNaN(parsed.getTime())) return date || '—'
+    return parsed.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+  }
+
+  const formatDisplayTime = (time: string) => {
+    if (!time) return '—'
+    const [h, m] = time.split(':').map(Number)
+    if (Number.isNaN(h)) return time
+    const period = h >= 12 ? 'PM' : 'AM'
+    const hour = h % 12 || 12
+    return `${hour}:${String(m || 0).padStart(2, '0')} ${period}`
+  }
+
+  const displayTrialStatus = (status?: string) => {
+    if (!status) return 'Pending'
+    if (status.includes('Confirmed') || status.includes('Accepted')) return 'Accepted'
+    if (status.includes('Cancelled') || status.includes('Rejected')) return 'Rejected'
+    if (status.includes('Pending')) return 'Pending'
+    return status
+  }
+
+  const pendingCount = bookings.filter(b => isTrialPending(b) || isPaidPending(b)).length
+
+  const scrollToPaidBookings = () => {
+    const el = document.getElementById('paid-bookings-section')
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
     <section className="section" style={{ background: 'var(--surface-2)', minHeight: '80vh' }}>
@@ -113,7 +293,33 @@ export default function AdminDashboard() {
               <MessageSquare size={20} strokeWidth={1.8} />
             </div>
             <div className="admin-actions">
-              <button type="button" className="btn btn-gold">Review Bookings</button>
+              <div className="admin-review-bookings-wrap" ref={reviewButtonRef}>
+                <button
+                  type="button"
+                  className="btn btn-gold"
+                  onClick={() => {
+                    setReviewPopoverOpen(open => !open)
+                    scrollToPaidBookings()
+                  }}
+                >
+                  Review Bookings
+                </button>
+                {bookings.length > 0 && (
+                  <span className="admin-review-badge" aria-label={`${bookings.length} bookings`}>
+                    {bookings.length}
+                  </span>
+                )}
+                {reviewPopoverOpen && (
+                  <div className="admin-review-popover">
+                    <strong>{bookings.length} Bookings</strong>
+                    <ul>
+                      <li>{trialBookings.length} trial / unsure</li>
+                      <li>{paidBookings.length} paid</li>
+                      <li>{pendingCount} pending action</li>
+                    </ul>
+                  </div>
+                )}
+              </div>
               <button type="button" className="btn btn-primary">Manage Students</button>
               <button type="button" className="btn btn-outline">Update Courses</button>
             </div>
@@ -123,21 +329,196 @@ export default function AdminDashboard() {
         <div className="admin-panel" style={{ marginTop: 20 }}>
           <div className="admin-panel-header">
             <h2>Recent Trial Requests</h2>
-            <span>Today</span>
+            <span>{trialBookings.length} total</span>
           </div>
-          <div className="admin-request-list">
-            {requests.map(request => (
-              <div className="admin-request-row" key={request.name}>
-                <div>
-                  <strong>{request.name}</strong>
-                  <p>{request.course}</p>
-                </div>
-                <span>{request.status}</span>
-              </div>
-            ))}
+          {bookingsError && <div className="auth-error">{bookingsError}</div>}
+          <div className="admin-table-container" style={{ overflowX: 'auto', marginTop: 16 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.95rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
+                  <th style={{ padding: '12px' }}>Student</th>
+                  <th style={{ padding: '12px' }}>Email</th>
+                  <th style={{ padding: '12px' }}>Date</th>
+                  <th style={{ padding: '12px' }}>Time</th>
+                  <th style={{ padding: '12px' }}>Topic</th>
+                  <th style={{ padding: '12px' }}>Status</th>
+                  <th style={{ padding: '12px' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {trialBookings.length === 0 && !bookingsError && (
+                  <tr>
+                    <td colSpan={7} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary)' }}>No trial requests found.</td>
+                  </tr>
+                )}
+                {trialBookings.map(booking => (
+                  <tr
+                    key={booking._id}
+                    className="admin-booking-row"
+                    onClick={() => setSelectedBooking(booking)}
+                    tabIndex={0}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault()
+                        setSelectedBooking(booking)
+                      }
+                    }}
+                    style={{ borderBottom: '1px solid var(--border)' }}
+                  >
+                    <td style={{ padding: '12px', fontWeight: 500 }}>{booking.fullName}</td>
+                    <td style={{ padding: '12px' }}><a href={`mailto:${booking.email}`} style={{ color: 'var(--gold)', textDecoration: 'none' }}>{booking.email}</a></td>
+                    <td style={{ padding: '12px' }}>{formatBookingDate(booking.preferredDate)}</td>
+                    <td style={{ padding: '12px' }}>{formatDisplayTime(booking.preferredTime)}</td>
+                    <td style={{ padding: '12px' }}>{booking.subject}</td>
+                    <td style={{ padding: '12px' }}>{displayTrialStatus(booking.status)}</td>
+                    <td style={{ padding: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                      {isTrialPending(booking) && (
+                        <>
+                          <button onClick={(event) => { event.stopPropagation(); confirmTrialBooking(booking._id) }} style={{ background: '#10b981', border: 'none', borderRadius: '6px', cursor: 'pointer', color: '#fff', padding: '6px 12px', fontSize: '0.85rem', fontWeight: 500 }}>Accept</button>
+                          <button onClick={(event) => { event.stopPropagation(); rejectTrialBooking(booking._id) }} style={{ background: 'var(--surface-3)', border: '1px solid var(--border)', borderRadius: '6px', cursor: 'pointer', color: 'var(--text)', padding: '6px 12px', fontSize: '0.85rem', fontWeight: 500 }}>Reject</button>
+                        </>
+                      )}
+                      <button onClick={(event) => { event.stopPropagation(); deleteBooking(booking._id) }} style={{ background: '#ef4444', border: 'none', borderRadius: '6px', cursor: 'pointer', color: '#fff', padding: '6px 12px', fontSize: '0.85rem', fontWeight: 500 }}>Delete</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="admin-panel" id="paid-bookings-section" style={{ marginTop: 20 }}>
+          <div className="admin-panel-header">
+            <h2>Paid Bookings</h2>
+            <span>{paidBookings.length} total</span>
+          </div>
+          {bookingsError && <div className="auth-error">{bookingsError}</div>}
+          <div className="admin-table-container" style={{ overflowX: 'auto', marginTop: 16 }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.95rem' }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
+                  <th style={{ padding: '12px' }}>Student</th>
+                  <th style={{ padding: '12px' }}>Topic</th>
+                  <th style={{ padding: '12px' }}>Date</th>
+                  <th style={{ padding: '12px' }}>Time</th>
+                  <th style={{ padding: '12px' }}>Payment</th>
+                  <th style={{ padding: '12px' }}>Booking</th>
+                  <th style={{ padding: '12px' }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paidBookings.length === 0 && !bookingsError && (
+                  <tr>
+                    <td colSpan={7} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary)' }}>No paid bookings found.</td>
+                  </tr>
+                )}
+                {paidBookings.map(booking => (
+                  <tr
+                    key={booking._id}
+                    className="admin-booking-row"
+                    onClick={() => setSelectedBooking(booking)}
+                    tabIndex={0}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault()
+                        setSelectedBooking(booking)
+                      }
+                    }}
+                    style={{ borderBottom: '1px solid var(--border)' }}
+                  >
+                    <td style={{ padding: '12px', fontWeight: 500 }}>{booking.fullName}</td>
+                    <td style={{ padding: '12px' }}>{booking.subject}</td>
+                    <td style={{ padding: '12px' }}>{formatShortDate(booking.preferredDate)}</td>
+                    <td style={{ padding: '12px' }}>{formatDisplayTime(booking.preferredTime)}</td>
+                    <td style={{ padding: '12px' }}>{getPaymentStatus(booking)}</td>
+                    <td style={{ padding: '12px' }}>{getBookingStatus(booking)}</td>
+                    <td style={{ padding: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                      {isPaidPending(booking) ? (
+                        <>
+                          <button onClick={(event) => { event.stopPropagation(); confirmPaidBooking(booking._id) }} style={{ background: '#10b981', border: 'none', borderRadius: '6px', cursor: 'pointer', color: '#fff', padding: '6px 12px', fontSize: '0.85rem', fontWeight: 500 }}>Confirm</button>
+                          <button onClick={(event) => { event.stopPropagation(); rejectPaidBooking(booking._id) }} style={{ background: 'var(--surface-3)', border: '1px solid var(--border)', borderRadius: '6px', cursor: 'pointer', color: 'var(--text)', padding: '6px 12px', fontSize: '0.85rem', fontWeight: 500 }}>Reject</button>
+                        </>
+                      ) : (
+                        <button onClick={(event) => { event.stopPropagation(); setSelectedBooking(booking) }} style={{ background: 'var(--navy)', border: 'none', borderRadius: '6px', cursor: 'pointer', color: '#fff', padding: '6px 12px', fontSize: '0.85rem', fontWeight: 500 }}>View</button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
+
+      {selectedBooking && (
+        <div className="booking-details-overlay" role="dialog" aria-modal="true" aria-labelledby="booking-details-title" onClick={() => setSelectedBooking(null)}>
+          <div className="booking-details-panel" onClick={(event) => event.stopPropagation()}>
+            <div className="booking-details-header">
+              <h2 id="booking-details-title">Booking Details</h2>
+              <button type="button" className="booking-details-close" aria-label="Close booking details" onClick={() => setSelectedBooking(null)}>x</button>
+            </div>
+
+            <dl className="booking-details-list">
+              <div>
+                <dt>Name:</dt>
+                <dd>{selectedBooking.fullName}</dd>
+              </div>
+              <div>
+                <dt>Email:</dt>
+                <dd><a href={`mailto:${selectedBooking.email}`}>{selectedBooking.email}</a></dd>
+              </div>
+              <div>
+                <dt>Date:</dt>
+                <dd>{formatBookingDate(selectedBooking.preferredDate)}</dd>
+              </div>
+              <div>
+                <dt>Time:</dt>
+                <dd>{formatDisplayTime(selectedBooking.preferredTime) || 'Not provided'}</dd>
+              </div>
+              <div>
+                <dt>Topic:</dt>
+                <dd>{selectedBooking.subject || 'Not provided'}</dd>
+              </div>
+              {selectedBooking.pricingPlan && (
+                <div>
+                  <dt>Plan:</dt>
+                  <dd>{selectedBooking.pricingPlan}</dd>
+                </div>
+              )}
+              <div>
+                <dt>Description:</dt>
+                <dd>{selectedBooking.description || 'No description provided.'}</dd>
+              </div>
+              {isPaidRequest(selectedBooking) && (
+                <div>
+                  <dt>Payment:</dt>
+                  <dd>{getPaymentStatus(selectedBooking)}</dd>
+                </div>
+              )}
+              <div>
+                <dt>Status:</dt>
+                <dd>{isPaidRequest(selectedBooking) ? getBookingStatus(selectedBooking) : displayTrialStatus(selectedBooking.status)}</dd>
+              </div>
+            </dl>
+
+            <div className="booking-details-actions">
+              {isPaidRequest(selectedBooking) && isPaidPending(selectedBooking) && (
+                <>
+                  <button type="button" className="booking-action accept" onClick={() => confirmPaidBooking(selectedBooking._id)}>Confirm</button>
+                  <button type="button" className="booking-action reject" onClick={() => rejectPaidBooking(selectedBooking._id)}>Reject</button>
+                </>
+              )}
+              {isTrialRequest(selectedBooking) && isTrialPending(selectedBooking) && (
+                <>
+                  <button type="button" className="booking-action accept" onClick={() => confirmTrialBooking(selectedBooking._id)}>Accept</button>
+                  <button type="button" className="booking-action reject" onClick={() => rejectTrialBooking(selectedBooking._id)}>Reject</button>
+                </>
+              )}
+              <button type="button" className="booking-action delete" onClick={() => deleteBooking(selectedBooking._id)}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

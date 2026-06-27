@@ -1,8 +1,19 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { Star, Trophy, GraduationCap, Clock, TrendingUp, Users, Ruler, BookOpen, CreditCard } from 'lucide-react'
 import tutorPhoto from '../assets/tutor.jpg'
 
 export default function Home() {
+  const [email, setEmail] = useState('')
+  const navigate = useNavigate()
+
+  const handleBooking = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (email) {
+      navigate(`/book?email=${encodeURIComponent(email)}`)
+    }
+  }
+
   return (
     <>
       {/* Hero */}
@@ -128,6 +139,29 @@ export default function Home() {
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* CTA / Contact Section */}
+      <section className="cta-section" id="contact-form-section">
+        <div className="cta-card">
+          <div className="section-tag gold" style={{ marginBottom: 20 }}>✦ Book a Free Trial</div>
+          <h2>Start Your Math Journey Today</h2>
+          <p>Embark on your mathematics journey with a complimentary trial lesson. Together we will work towards your academic and career goals — making maths fun and easier. Let's get started!</p>
+          <form className="cta-form" onSubmit={handleBooking} id="booking-form">
+            <input
+              id="email-input"
+              type="email"
+              className="cta-input"
+              placeholder="Your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <button type="submit" id="book-now-btn" className="btn btn-gold">
+              Book Free Trial →
+            </button>
+          </form>
         </div>
       </section>
     </>

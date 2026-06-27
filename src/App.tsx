@@ -14,6 +14,7 @@ import AboutPage from './pages/AboutPage'
 import ReviewsPage from './pages/ReviewsPage'
 import PricingPage from './pages/PricingPage'
 import AdminDashboard from './pages/admindashboard'
+import BookingPage from './pages/BookingPage'
 
 import './index.css'
 
@@ -85,10 +86,10 @@ export default function App() {
       const body = authTab === 'login'
         ? { identifier: loginId, password: authForm.password }
         : {
-            username: authForm.name.trim(),
-            email: loginId,
-            password: authForm.password,
-          }
+          username: authForm.name.trim(),
+          email: loginId,
+          password: authForm.password,
+        }
 
       const response = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
@@ -116,7 +117,7 @@ export default function App() {
     <BrowserRouter>
       <ScrollToTop />
       {adminRedirect && <AdminRedirect onDone={() => setAdminRedirect(false)} />}
-      
+
       <Navbar
         onLogin={() => openAuth('login')}
         onSignup={() => openAuth('signup')}
@@ -137,6 +138,7 @@ export default function App() {
           <Route path="/reviews" element={<ReviewsPage />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/book" element={<BookingPage />} />
         </Routes>
       </main>
 
