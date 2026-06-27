@@ -1,17 +1,9 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
 import { plans } from '../data'
 
 export default function PricingPage() {
-  const [email, setEmail] = useState('')
   const navigate = useNavigate()
-  const handleBooking = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (email) {
-      navigate(`/book?email=${encodeURIComponent(email)}`)
-    }
-  }
 
   return (
     <>
