@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { CalendarCheck, DollarSign, GraduationCap, MessageSquare, Users } from 'lucide-react'
+import { curriculum, plans } from '../data'
 
 const rawApiUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_REACT_APP_BASE_URL || "https://backend-olive-alpha-20.vercel.app"
 const API_BASE_URL = rawApiUrl.replace(/\/+$/, '')
@@ -22,14 +23,14 @@ interface Booking {
   description: string
   status: string
   paymentStatus?: string
+  createdAt?: string
 }
 
-const stats = [
-  { Icon: Users, label: 'Active Students', value: '128' },
-  { Icon: CalendarCheck, label: 'Trial Requests', value: '24' },
-  { Icon: GraduationCap, label: 'Courses Managed', value: '6' },
-  { Icon: DollarSign, label: 'Monthly Revenue', value: '$3,420' },
-]
+const PLAN_PRICES = Object.fromEntries(
+  plans.map((plan) => [plan.plan, Number(plan.price)])
+) as Record<string, number>
+
+const STATS_REFRESH_MS = 30_000
 
 function isTrialRequest(booking: Booking): boolean {
   const plan = booking.pricingPlan || ''
@@ -66,6 +67,31 @@ function isPaidPending(booking: Booking): boolean {
   return payment.includes('Pending') || bookingStatus.includes('Pending')
 }
 
+function getPlanPrice(pricingPlan?: string): number {
+  const plan = (pricingPlan || '').trim()
+  return PLAN_PRICES[plan] ?? 0
+}
+
+function isRevenueBooking(booking: Booking): boolean {
+  if (!isPaidRequest(booking)) return false
+  const payment = getPaymentStatus(booking)
+  if (payment.includes('Paid')) return true
+  const status = booking.status || ''
+  return status.includes('Confirmed') || status.includes('Accepted')
+}
+
+function isInCurrentMonth(dateStr?: string): boolean {
+  if (!dateStr) return false
+  const date = new Date(dateStr)
+  if (Number.isNaN(date.getTime())) return false
+  const now = new Date()
+  return date.getFullYear() === now.getFullYear() && date.getMonth() === now.getMonth()
+}
+
+function formatCurrency(amount: number): string {
+  return `$${amount.toLocaleString()}`
+}
+
 export default function AdminDashboard() {
   const [registeredUsers, setRegisteredUsers] = useState<RegisteredUser[]>([])
   const [usersError, setUsersError] = useState('')
@@ -77,6 +103,19 @@ export default function AdminDashboard() {
 
   const trialBookings = bookings.filter(isTrialRequest)
   const paidBookings = bookings.filter(isPaidRequest)
+
+  const stats = useMemo(() => {
+    const monthlyRevenue = bookings
+      .filter((booking) => isRevenueBooking(booking) && isInCurrentMonth(booking.createdAt))
+      .reduce((total, booking) => total + getPlanPrice(booking.pricingPlan), 0)
+
+    return [
+      { Icon: Users, label: 'Active Students', value: String(registeredUsers.length) },
+      { Icon: CalendarCheck, label: 'Trial Requests', value: String(trialBookings.length) },
+      { Icon: GraduationCap, label: 'Courses Managed', value: String(curriculum.length) },
+      { Icon: DollarSign, label: 'Monthly Revenue', value: formatCurrency(monthlyRevenue) },
+    ]
+  }, [registeredUsers.length, trialBookings.length, bookings])
 
   useEffect(() => {
     let cancelled = false
@@ -92,6 +131,7 @@ export default function AdminDashboard() {
 
         if (!cancelled) {
           setRegisteredUsers(data.users || [])
+          setUsersError('')
         }
       } catch (err) {
         if (!cancelled) {
@@ -111,6 +151,7 @@ export default function AdminDashboard() {
 
         if (!cancelled) {
           setBookings(data.bookings || [])
+          setBookingsError('')
         }
       } catch (err) {
         if (!cancelled) {
@@ -119,11 +160,17 @@ export default function AdminDashboard() {
       }
     }
 
-    fetchUsers()
-    fetchBookings()
+    function refreshDashboardData() {
+      fetchUsers()
+      fetchBookings()
+    }
+
+    refreshDashboardData()
+    const intervalId = window.setInterval(refreshDashboardData, STATS_REFRESH_MS)
 
     return () => {
       cancelled = true
+      window.clearInterval(intervalId)
     }
   }, [])
 

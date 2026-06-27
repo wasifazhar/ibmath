@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import PageHeader from '../components/PageHeader'
-import { testimonials } from '../data'
+import { ibTestimonials } from '../data'
 
 export default function ReviewsPage() {
   return (
@@ -15,7 +15,7 @@ export default function ReviewsPage() {
       <section className="section testimonials-section" id="testimonials">
         <div className="section-inner">
           <div className="testimonials-grid">
-            {testimonials.map((t, i) => (
+            {ibTestimonials.map((t, i) => (
               <div className="testimonial-card animate-in" id={`testimonial-${i}`} key={i}>
                 <div className="testimonial-stars" style={{ color: 'var(--gold)', marginBottom: 16 }}>
                   {'★'.repeat(t.stars)}

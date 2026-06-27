@@ -33,11 +33,15 @@ export const testimonials = [
   { initials: 'AN', name: 'Anonymous', meta: 'AP Calculus',                  stars: 5, text: 'Before I got to Ather, I tried other math tutors. With Ather, I started to actually learn math. He is helping me prepare for a challenging exam from Calculus 3. He is very patient and every minute of the class is worth it. Excellent tutor, strongly recommended 10/10.' },
 ]
 
+export const ibTestimonials = testimonials.filter((t) =>
+  /\bib\b/i.test(`${t.meta} ${t.text}`)
+)
+
 export const plans = [
   {
     plan: 'Trial',
     price: '0',
-    desc: 'A single 50-minute trial lesson to experience the teaching style.',
+    desc: 'A single 20-minute trial lesson to experience the teaching style.',
     features: ['20-min lesson', 'One-on-one session', 'Topic of your choice', 'No commitment required', 'Instant booking'],
     featured: false,
   },
