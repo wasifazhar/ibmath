@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Star, Trophy, GraduationCap, Clock, TrendingUp, Users, Ruler, BookOpen, CreditCard } from 'lucide-react'
-import tutorPhoto from '../assets/tutor.jpg'
 
 export default function Home() {
   const [email, setEmail] = useState('')
@@ -30,7 +29,7 @@ export default function Home() {
 
             <h1 className="hero-title">
               Master <span className="hero-accent">Mathematics</span>{' '}
-              with Ather Amin.
+              with A. Amin.
             </h1>
 
             <p className="hero-sub">
@@ -71,11 +70,8 @@ export default function Home() {
           {/* Right: Tutor card */}
           <div className="hero-visual" style={{ width: '100%', maxWidth: 400 }}>
             <div className="tutor-card" id="tutor-card">
-              <div className="tutor-photo-wrap">
-                <img src={tutorPhoto} alt="Ather A. — IB Math Tutor" className="tutor-photo" id="tutor-photo" />
-              </div>
               <div className="tutor-info">
-                <div className="tutor-name">Ather A.</div>
+                <div className="tutor-name">A. Amin</div>
                 <div className="tutor-title">IB Math Tutor · AA &amp; AI, HL &amp; SL</div>
                 <ul className="tutor-bullets">
                   <li><span className="tutor-dot" /><strong>4.9 ★</strong> rating · 140 reviews</li>

@@ -570,7 +570,7 @@ h3 { font-size: 1.25rem; }
 }
 
 .tutor-info {
-  padding: 28px 24px 28px 16px;
+  padding: 28px 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1741,14 +1741,6 @@ h3 { font-size: 1.25rem; }
   }
   .hero {
     padding-top: 34px;
-  }
-  .tutor-card {
-    display: grid;
-    grid-template-columns: 112px 1fr;
-  }
-  .tutor-photo-wrap {
-    width: 112px;
-    min-width: 112px;
   }
   .tutor-info {
     padding: 18px 12px;
