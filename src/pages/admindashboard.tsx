@@ -27,14 +27,7 @@ interface Booking {
   createdAt?: string
 }
 
-interface Resource {
-  _id: string
-  title: string
-  description: string
-  subject: string
-  viewUrl: string
-  downloadUrl: string
-}
+
 
 const PLAN_PRICES = Object.fromEntries(
   plans.map((plan) => [plan.plan, Number(plan.price)])
