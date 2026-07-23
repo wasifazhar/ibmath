@@ -116,35 +116,25 @@ export default function ManageResourcesPage() {
 
           {resourcesError && <div className="auth-error">{resourcesError}</div>}
           
-          <div className="admin-table-container" style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.95rem' }}>
-              <thead>
-                <tr style={{ borderBottom: '1px solid var(--border)', color: 'var(--text-secondary)' }}>
-                  <th style={{ padding: '12px' }}>Title</th>
-                  <th style={{ padding: '12px' }}>Subject</th>
-                  <th style={{ padding: '12px' }}>Description</th>
-                  <th style={{ padding: '12px' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredResources.length === 0 && !resourcesError && (
-                  <tr>
-                    <td colSpan={4} style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary)' }}>No resources found.</td>
-                  </tr>
-                )}
-                {filteredResources.map(resource => (
-                  <tr key={resource._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                    <td style={{ padding: '12px', fontWeight: 500 }}>{resource.title}</td>
-                    <td style={{ padding: '12px' }}>{resource.subject}</td>
-                    <td style={{ padding: '12px', maxWidth: '250px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{resource.description}</td>
-                    <td style={{ padding: '12px', display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
-                      <button onClick={() => { setEditingResource(resource); setEditResourceModalOpen(true); }} style={{ background: 'var(--gold)', border: 'none', borderRadius: '6px', cursor: 'pointer', color: '#fff', padding: '6px 12px', fontSize: '0.85rem', fontWeight: 500 }}>Edit</button>
-                      <button onClick={() => handleDeleteResource(resource._id)} style={{ background: '#ef4444', border: 'none', borderRadius: '6px', cursor: 'pointer', color: '#fff', padding: '6px 12px', fontSize: '0.85rem', fontWeight: 500 }}>Delete</button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+            {filteredResources.length === 0 && !resourcesError && (
+              <div style={{ gridColumn: '1 / -1', padding: '40px 20px', textAlign: 'center', color: 'var(--text-secondary)', background: 'var(--surface)', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                No resources found.
+              </div>
+            )}
+            {filteredResources.map(resource => (
+              <div key={resource._id} style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px', boxShadow: 'var(--shadow-sm)' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', color: 'var(--navy)', marginBottom: '8px', lineHeight: 1.3 }}>{resource.title}</h3>
+                  <span style={{ display: 'inline-block', padding: '4px 12px', background: 'var(--blue-light)', color: 'var(--blue)', fontSize: '0.75rem', fontWeight: 600, borderRadius: '99px' }}>{resource.subject}</span>
+                </div>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', flex: 1, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{resource.description}</p>
+                <div style={{ display: 'flex', gap: '8px', marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border-soft)' }}>
+                  <button onClick={() => { setEditingResource(resource); setEditResourceModalOpen(true); }} style={{ flex: 1, background: 'var(--surface-2)', border: '1px solid var(--border)', borderRadius: '8px', cursor: 'pointer', color: 'var(--navy)', padding: '8px', fontSize: '0.85rem', fontWeight: 600, transition: 'all 0.2s' }}>Edit</button>
+                  <button onClick={() => handleDeleteResource(resource._id)} style={{ flex: 1, background: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', cursor: 'pointer', color: '#B42318', padding: '8px', fontSize: '0.85rem', fontWeight: 600, transition: 'all 0.2s' }}>Delete</button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
