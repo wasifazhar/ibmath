@@ -116,9 +116,6 @@ export default function AdminDashboard() {
   const [pdfFile, setPdfFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
 
-  const [resources, setResources] = useState<Resource[]>([])
-  const [resourcesError, setResourcesError] = useState('')
-
   const trialBookings = bookings.filter(isTrialRequest)
   const paidBookings = bookings.filter(isPaidRequest)
 
@@ -180,24 +177,9 @@ export default function AdminDashboard() {
       }
     }
 
-    async function fetchResources() {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/resources`)
-        const data = await response.json()
-        if (!response.ok) throw new Error(data.message || 'Could not fetch resources.')
-        if (!cancelled) {
-          setResources(data.resources || [])
-          setResourcesError('')
-        }
-      } catch (err) {
-        if (!cancelled) setResourcesError(err instanceof Error ? err.message : 'Could not fetch resources.')
-      }
-    }
-
     function refreshDashboardData() {
       fetchUsers()
       fetchBookings()
-      fetchResources()
     }
 
     refreshDashboardData()
