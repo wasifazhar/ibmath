@@ -13,7 +13,7 @@ interface ResourceItem {
   viewUrl: string
   downloadUrl: string
 }
-
+//this is it
 export default function ResourcesPage() {
   const [resources, setResources] = useState<ResourceItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -36,50 +36,50 @@ export default function ResourcesPage() {
     fetchResources()
   }, [])
 
-  const filteredResources = resources.filter(r => 
-    r.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    r.description.toLowerCase().includes(searchQuery.toLowerCase()) || 
+  const filteredResources = resources.filter(r =>
+    r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    r.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
     r.subject.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
   return (
     <>
-      <PageHeader 
-        title="Student Resources" 
+      <PageHeader
+        title="Student Resources"
         subtitle="Free study materials, guides, and tools for IB Mathematics."
       />
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '60px 24px' }}>
-        
+
         <div style={{ marginBottom: '40px', position: 'relative', maxWidth: '600px', margin: '0 auto 40px auto' }}>
           <div style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', color: '#999' }}>
             <Search size={20} />
           </div>
-          <input 
-            type="text" 
-            placeholder="Search resources by title, subject, or keywords..." 
+          <input
+            type="text"
+            placeholder="Search resources by title, subject, or keywords..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ 
-              width: '100%', 
-              padding: '16px 20px 16px 48px', 
-              borderRadius: '12px', 
-              border: '1px solid rgba(0,0,0,0.1)', 
+            style={{
+              width: '100%',
+              padding: '16px 20px 16px 48px',
+              borderRadius: '12px',
+              border: '1px solid rgba(0,0,0,0.1)',
               boxShadow: '0 4px 20px rgba(0,0,0,0.05)',
               fontSize: '1rem',
               outline: 'none',
               fontFamily: 'inherit',
               transition: 'all 0.2s ease'
-            }} 
+            }}
             onFocus={(e) => e.currentTarget.style.borderColor = 'var(--gold)'}
             onBlur={(e) => e.currentTarget.style.borderColor = 'rgba(0,0,0,0.1)'}
           />
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '30px' }}>
-          
+
           {loading && <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px' }}>Loading resources...</div>}
           {error && <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'red' }}>{error}</div>}
-          
+
           {filteredResources.map(resource => (
             <div key={resource._id} style={{ background: '#fff', borderRadius: '16px', padding: '30px', boxShadow: '0 12px 40px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)' }}>
               <div style={{ background: 'rgba(15,32,68,0.05)', width: '60px', height: '60px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', color: 'var(--navy)' }}>
