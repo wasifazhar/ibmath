@@ -16,6 +16,7 @@ import PricingPage from './pages/PricingPage'
 import AdminDashboard from './pages/admindashboard'
 import BookingPage from './pages/BookingPage'
 import ResourcesPage from './pages/ResourcesPage'
+import ManageResourcesPage from './pages/ManageResourcesPage'
 
 import './index.css'
 
@@ -141,6 +142,7 @@ export default function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/book" element={<BookingPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
+          <Route path="/admin/resources" element={<ManageResourcesPage />} />
         </Routes>
       </main>
 

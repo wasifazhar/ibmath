@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { CalendarCheck, DollarSign, GraduationCap, MessageSquare, Users } from 'lucide-react'
 import { curriculum, plans } from '../data'
+import { useNavigate } from 'react-router-dom'
 
 const rawApiUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_REACT_APP_BASE_URL || "https://backend-olive-alpha-20.vercel.app"
 const API_BASE_URL = rawApiUrl.replace(/\/+$/, '')
@@ -24,6 +25,15 @@ interface Booking {
   status: string
   paymentStatus?: string
   createdAt?: string
+}
+
+interface Resource {
+  _id: string
+  title: string
+  description: string
+  subject: string
+  viewUrl: string
+  downloadUrl: string
 }
 
 const PLAN_PRICES = Object.fromEntries(
@@ -93,6 +103,7 @@ function formatCurrency(amount: number): string {
 }
 
 export default function AdminDashboard() {
+  const navigate = useNavigate()
   const [registeredUsers, setRegisteredUsers] = useState<RegisteredUser[]>([])
   const [usersError, setUsersError] = useState('')
   const [bookings, setBookings] = useState<Booking[]>([])
@@ -105,8 +116,13 @@ export default function AdminDashboard() {
   const [pdfFile, setPdfFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
 
+  const [resources, setResources] = useState<Resource[]>([])
+  const [resourcesError, setResourcesError] = useState('')
+
   const trialBookings = bookings.filter(isTrialRequest)
   const paidBookings = bookings.filter(isPaidRequest)
+
+
 
   const stats = useMemo(() => {
     const monthlyRevenue = bookings
@@ -164,9 +180,24 @@ export default function AdminDashboard() {
       }
     }
 
+    async function fetchResources() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/resources`)
+        const data = await response.json()
+        if (!response.ok) throw new Error(data.message || 'Could not fetch resources.')
+        if (!cancelled) {
+          setResources(data.resources || [])
+          setResourcesError('')
+        }
+      } catch (err) {
+        if (!cancelled) setResourcesError(err instanceof Error ? err.message : 'Could not fetch resources.')
+      }
+    }
+
     function refreshDashboardData() {
       fetchUsers()
       fetchBookings()
+      fetchResources()
     }
 
     refreshDashboardData()
@@ -322,6 +353,8 @@ export default function AdminDashboard() {
     }
   }
 
+
+
   return (
     <section className="section" style={{ background: 'var(--surface-2)', minHeight: '80vh' }}>
       <div className="section-inner">
@@ -407,7 +440,10 @@ export default function AdminDashboard() {
                 )}
               </div>
               <button type="button" className="btn btn-primary">Manage Students</button>
-              <button type="button" className="btn btn-outline" onClick={() => setResourceModalOpen(true)}>Upload Resource</button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <button type="button" className="btn btn-outline" onClick={() => setResourceModalOpen(true)}>Upload Resource</button>
+                <button type="button" className="btn btn-outline" onClick={() => navigate('/admin/resources')}>Manage Resources</button>
+              </div>
             </div>
           </div>
         </div>
@@ -637,6 +673,7 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
+
     </section>
   )
 }
