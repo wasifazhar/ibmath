@@ -1,16 +1,17 @@
 import { Download, FileText, Video } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
+//this is it 
 
 export default function ResourcesPage() {
   return (
     <>
-      <PageHeader 
-        title="Student Resources" 
+      <PageHeader
+        title="Student Resources"
         subtitle="Free study materials, guides, and tools for IB Mathematics."
       />
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '60px 24px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '30px' }}>
-          
+
           <div style={{ background: '#fff', borderRadius: '16px', padding: '30px', boxShadow: '0 12px 40px rgba(0,0,0,0.06)', border: '1px solid rgba(0,0,0,0.05)' }}>
             <div style={{ background: 'rgba(15,32,68,0.05)', width: '60px', height: '60px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '20px', color: 'var(--navy)' }}>
               <FileText size={28} />
