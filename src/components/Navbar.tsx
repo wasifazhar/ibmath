@@ -16,6 +16,7 @@ const links = [
   { to: '/about',      label: 'About' },
   { to: '/reviews',    label: 'Reviews' },
   { to: '/pricing',    label: 'Pricing' },
+  { to: '/resources',  label: 'Resources' },
 ]
 
 export default function Navbar({ onLogin, onSignup, userName, isAdmin, onLogout }: Props) {

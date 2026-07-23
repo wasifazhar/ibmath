@@ -5,6 +5,9 @@ import { plans } from '../data'
 export default function PricingPage() {
   const navigate = useNavigate()
 
+
+
+  
   return (
     <>
       <PageHeader

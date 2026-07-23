@@ -100,6 +100,10 @@ export default function AdminDashboard() {
   const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
   const [reviewPopoverOpen, setReviewPopoverOpen] = useState(false)
   const reviewButtonRef = useRef<HTMLDivElement>(null)
+  const [resourceModalOpen, setResourceModalOpen] = useState(false)
+  const [resourceForm, setResourceForm] = useState({ title: '', description: '', subject: '' })
+  const [pdfFile, setPdfFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   const trialBookings = bookings.filter(isTrialRequest)
   const paidBookings = bookings.filter(isPaidRequest)
@@ -283,6 +287,41 @@ export default function AdminDashboard() {
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
+  const handleResourceSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!pdfFile) {
+      alert("Please select a PDF file.")
+      return
+    }
+    setIsUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append("title", resourceForm.title)
+      formData.append("description", resourceForm.description)
+      formData.append("subject", resourceForm.subject)
+      formData.append("pdf", pdfFile)
+
+      const res = await fetch(`${API_BASE_URL}/api/resources`, {
+        method: "POST",
+        body: formData,
+      })
+      
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.message || "Failed to upload.")
+      }
+      
+      alert("Resource uploaded successfully!")
+      setResourceModalOpen(false)
+      setResourceForm({ title: '', description: '', subject: '' })
+      setPdfFile(null)
+    } catch (error: any) {
+      alert(error.message)
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
   return (
     <section className="section" style={{ background: 'var(--surface-2)', minHeight: '80vh' }}>
       <div className="section-inner">
@@ -368,7 +407,7 @@ export default function AdminDashboard() {
                 )}
               </div>
               <button type="button" className="btn btn-primary">Manage Students</button>
-              <button type="button" className="btn btn-outline">Update Courses</button>
+              <button type="button" className="btn btn-outline" onClick={() => setResourceModalOpen(true)}>Upload Resource</button>
             </div>
           </div>
         </div>
@@ -563,6 +602,38 @@ export default function AdminDashboard() {
               )}
               <button type="button" className="booking-action delete" onClick={() => deleteBooking(selectedBooking._id)}>Delete</button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {resourceModalOpen && (
+        <div className="booking-details-overlay" role="dialog" aria-modal="true" onClick={() => setResourceModalOpen(false)}>
+          <div className="booking-details-panel" onClick={(event) => event.stopPropagation()} style={{ maxWidth: '500px' }}>
+            <div className="booking-details-header">
+              <h2>Upload Resource</h2>
+              <button type="button" className="booking-details-close" onClick={() => setResourceModalOpen(false)}>x</button>
+            </div>
+            <form className="auth-form" style={{ marginTop: '20px' }} onSubmit={handleResourceSubmit}>
+              <div className="auth-field">
+                <label>Title</label>
+                <input type="text" placeholder="e.g. Past Paper 2023" value={resourceForm.title} onChange={e => setResourceForm({ ...resourceForm, title: e.target.value })} required />
+              </div>
+              <div className="auth-field">
+                <label>Description</label>
+                <textarea placeholder="Description of the resource" value={resourceForm.description} onChange={e => setResourceForm({ ...resourceForm, description: e.target.value })} required style={{ width: '100%', padding: '12px', border: '1px solid rgba(0,0,0,0.12)', borderRadius: '10px', minHeight: '80px', fontFamily: 'inherit' }} />
+              </div>
+              <div className="auth-field">
+                <label>Subject</label>
+                <input type="text" placeholder="e.g. Math AA HL" value={resourceForm.subject} onChange={e => setResourceForm({ ...resourceForm, subject: e.target.value })} required />
+              </div>
+              <div className="auth-field">
+                <label>Choose PDF</label>
+                <input type="file" accept="application/pdf" onChange={e => setPdfFile(e.target.files?.[0] || null)} required style={{ padding: '8px 0' }} />
+              </div>
+              <button type="submit" className="btn btn-gold" style={{ width: '100%', justifyContent: 'center', marginTop: '10px' }} disabled={isUploading}>
+                {isUploading ? 'Uploading...' : 'Upload'}
+              </button>
+            </form>
           </div>
         </div>
       )}
