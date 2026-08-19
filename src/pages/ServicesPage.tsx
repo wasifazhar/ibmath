@@ -7,9 +7,9 @@ export default function ServicesPage() {
     <>
       <PageHeader
         tag="✦ What Ather Teaches"
-        title="Expert Tuition Across Every Major Syllabus"
-        accent="Every Major Syllabus"
-        subtitle="From IB and GCSE to AP Calculus and SAT — 16 years of proven teaching experience across every major mathematics curriculum."
+        title="Expert Tuition for IB Math, AP Calculus & SAT"
+        accent="IB Math, AP Calculus & SAT"
+        subtitle="Specialized tutoring in IB Mathematics (AA & AI), AP Calculus, and SAT Math — 20 years of proven teaching experience."
       />
 
       <section className="section" id="services">

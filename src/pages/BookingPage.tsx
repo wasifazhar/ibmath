@@ -320,8 +320,7 @@ export default function BookingPage() {
                   <option value="IB Mathematics AA HL">IB Mathematics AA HL</option>
                   <option value="IB Mathematics AI SL">IB Mathematics AI SL</option>
                   <option value="IB Mathematics AI HL">IB Mathematics AI HL</option>
-                  <option value="GCSE Mathematics">GCSE Mathematics</option>
-                  <option value="A-Level Mathematics">A-Level Mathematics</option>
+                  <option value="AP Calculus">AP Calculus</option>
                   <option value="SAT Math">SAT Math</option>
                   <option value="Other">Other</option>
                 </select>

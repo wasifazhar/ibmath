@@ -7,9 +7,9 @@ export default function CurriculumPage() {
     <>
       <PageHeader
         tag="✦ Courses Covered"
-        title="All Major Mathematics Syllabuses"
-        accent="Mathematics Syllabuses"
-        subtitle="IB, GCSE, IGCSE, A-Level, O-Level, AP Calculus, SAT and more — comprehensively taught with 16 years of hands-on experience."
+        title="Comprehensive IB & AP / SAT Courses"
+        accent="IB & AP / SAT Courses"
+        subtitle="IB Mathematics (AA & AI), AP Calculus, and SAT Math — comprehensively taught with 20 years of hands-on experience."
       />
 
       <section className="section" id="curriculum">

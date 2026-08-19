@@ -34,7 +34,7 @@ export default function Home() {
 
             <p className="hero-sub">
               Certified tutor with <strong>20 years</strong> of experience. Master's in Mathematics.
-              IB SL/HL · GCSE · IGCSE · A-Level · AP Calculus · SAT · O-Level.
+              IB SL/HL · AP Calculus · SAT.
               Taught <strong>6,000+ lessons</strong> to students from <strong>40+ countries</strong>.
             </p>
 

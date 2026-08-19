@@ -18,7 +18,7 @@ export default function AboutPage() {
               <div className="section-tag gold" style={{ display: 'inline-block', marginBottom: 12 }}>✦ Credentials &amp; Philosophy</div>
               <h2 style={{ color: '#fff', fontSize: '2rem', marginBottom: 20 }}>Guiding Students to Academic Success</h2>
               <p style={{ color: 'rgba(255,255,255,.72)', marginBottom: 36, lineHeight: 1.7 }}>
-                Teaching mathematics is not just about solving equations; it's about building confidence and developing critical thinking. Over the last 16 years, Sir Ather has helped hundreds of students from 40+ countries understand complex mathematical structures.
+                Teaching mathematics is not just about solving equations; it's about building confidence and developing critical thinking. Over the last 20 years, Sir Ather has helped hundreds of students from 40+ countries understand complex mathematical structures.
               </p>
               <div className="why-features">
                 {whyFeatures.map((f, i) => (
@@ -50,7 +50,7 @@ export default function AboutPage() {
       <div style={{ background: 'var(--surface-2)', padding: '64px 24px', textAlign: 'center' }}>
         <h3 style={{ color: 'var(--navy)', marginBottom: 12 }}>Unlock Your Mathematical Potential</h3>
         <p style={{ color: 'var(--text-secondary)', maxWidth: 600, margin: '0 auto 28px', lineHeight: 1.6 }}>
-          Whether preparing for IB HL AA, GCSE exams, or looking to catch up on fundamentals, Ather creates a supportive environment that turns anxiety into understanding.
+          Whether preparing for IB HL/SL, AP Calculus, or SAT Math, Ather creates a supportive environment that turns anxiety into understanding.
         </p>
         <a href="/pricing" className="btn btn-gold btn-lg">Book a Trial with Ather</a>
       </div>

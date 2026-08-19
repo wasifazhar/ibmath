@@ -16,10 +16,8 @@ export default function Footer() {
           <div className="footer-col">
             <h4>Services</h4>
             <ul>
-              <li><Link to="/services" id="footer-link-ib">IB AA & AI SL/HL</Link></li>
-              <li><Link to="/services" id="footer-link-gcse">GCSE & IGCSE</Link></li>
-              <li><Link to="/services" id="footer-link-ap">AP Calculus & SAT</Link></li>
-              <li><Link to="/services" id="footer-link-alevel">A-Level & O-Level</Link></li>
+              <li><Link to="/services" id="footer-link-ib">IB Mathematics (AA & AI)</Link></li>
+              <li><Link to="/services" id="footer-link-ap">AP Calculus & SAT Math</Link></li>
             </ul>
           </div>
           <div className="footer-col">
